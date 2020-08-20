@@ -1,10 +1,10 @@
 import java.util.Objects;
 
 public class Account {
-    private final long REQUISITES;
-    private final String NAME;
-    private final String SUB_NAME;
-    private final int PIN;
+    private long REQUISITES;
+    private String NAME;
+    private String SUB_NAME;
+    private int PIN;
 
     public Account(long REQUISITES, String NAME, String SUB_NAME, int PIN) {
         this.REQUISITES = REQUISITES;
@@ -23,7 +23,9 @@ public class Account {
 
     @Override
     public int hashCode() {
-        return Objects.hash(PIN);
+        int result = PIN;
+        result = 31 * result + (PIN != 0 ? PIN + 1 : 0);
+        return result;
     }
 
     public String getNAME() {
@@ -40,5 +42,21 @@ public class Account {
 
     public int getPIN() {
         return PIN;
+    }
+
+    public void setREQUISITES(long REQUISITES) {
+        this.REQUISITES = REQUISITES;
+    }
+
+    public void setNAME(String NAME) {
+        this.NAME = NAME;
+    }
+
+    public void setSUB_NAME(String SUB_NAME) {
+        this.SUB_NAME = SUB_NAME;
+    }
+
+    public void setPIN(int PIN) {
+        this.PIN = PIN;
     }
 }
