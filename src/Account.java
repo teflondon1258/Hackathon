@@ -1,31 +1,20 @@
 import java.util.Objects;
 
 public class Account {
+    // must have fields
     private long REQUISITES;
     private String NAME;
     private String SUB_NAME;
     private int PIN;
+
+    // fields for client
+    private int balance = 0;
 
     public Account(long REQUISITES, String NAME, String SUB_NAME, int PIN) {
         this.REQUISITES = REQUISITES;
         this.NAME = NAME;
         this.SUB_NAME = SUB_NAME;
         this.PIN = PIN;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Account account = (Account) o;
-        return PIN == account.PIN;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = PIN;
-        result = 31 * result + (PIN != 0 ? PIN + 1 : 0);
-        return result;
     }
 
     public String getNAME() {
@@ -44,19 +33,29 @@ public class Account {
         return PIN;
     }
 
-    public void setREQUISITES(long REQUISITES) {
-        this.REQUISITES = REQUISITES;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Account account = (Account) o;
+
+        if (REQUISITES != account.REQUISITES) return false;
+        return PIN == account.PIN;
     }
 
-    public void setNAME(String NAME) {
-        this.NAME = NAME;
+    @Override
+    public int hashCode() {
+        int result = (int) (REQUISITES ^ (REQUISITES >>> 32));
+        result = 31 * result + PIN;
+        return result;
     }
 
-    public void setSUB_NAME(String SUB_NAME) {
-        this.SUB_NAME = SUB_NAME;
+    public int getBalance() {
+        return balance;
     }
 
-    public void setPIN(int PIN) {
-        this.PIN = PIN;
+    public void setBalance(int balance) {
+        this.balance += balance;
     }
 }

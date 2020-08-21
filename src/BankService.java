@@ -1,27 +1,22 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class BankService {
+public class BankService implements Console, Bank {
     Map<Long, Account> accounts = new HashMap<>();
     BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
     int count = 0;
 
+    @Override
     public void createAccount(long requisites, String name, String subName, int PIN) {
         Account account = new Account(requisites, name, subName, PIN);
         accounts.put(account.getREQUISITES(), account);
         count++;
-        /*System.out.println(account.hashCode() + "   первый хэш");
-        Account account1 = accounts.get(account.getPIN());
-        System.out.println(account1.hashCode() + "   Второй хэш");*/
-
-        /*arrayListAccount.add(account);*/
     }
 
+    @Override
     public void dataBase() {
         createAccount(4142_4884_3999_2555L,"Василий","Куприянович",1234);
         createAccount(4142_4884_3191_2454L,"Арсен","Ватулин",1248); // Одинаковый PIN (2)
@@ -36,63 +31,100 @@ public class BankService {
         createAccount(1192_9392_7423_9459L,"Джамбулат","Зукхариев",2121); // Одинаковый PIN (3)
     }
 
-    public String[] inputData() {
-        String[] askStr = new String[2];
+    @Override
+    public Account inputData() {
+        Account createAccount = null;
         try {
             System.out.println("Введите Ваш PIN-код");
-            askStr[0] = bf.readLine();
+            int PIN = Integer.parseInt(bf.readLine());
 
             System.out.println("Введите Ваши реквизиты");
-            askStr[1] = bf.readLine();
+            long requisites = Long.parseLong(bf.readLine());
+
+            createAccount = new Account(requisites,"","",PIN);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return askStr;
+        return createAccount;
     }
 
-    public Account[] createArrayOfAccount() {
-       String[] data = inputData();
+    @Override
+    public void printOperation() {
+        System.out.println("Select your variant of operation");
+        System.out.println("1. Show your balance\n" +
+                "2. Refresh balance\n" +
+                "3. Get some money\n" +
+                "4. Top up balance\n" +
+                "5. Exit");
+    }
 
-        Account[] accountOfArray = new Account[count];
-        int index = 0;
+    @Override
+    public String inputOperation() {
+        printOperation();
 
-        for (Map.Entry<Long, Account> entry : accounts.entrySet()) {
-            /*System.out.println(entry.getValue().getREQUISITES());*/
-            // установка заполненной мапы
-            accountOfArray[index].setSUB_NAME(entry.getValue().getSUB_NAME());
-            accountOfArray[index].setNAME(entry.getValue().getNAME());
-            // установка данных со стринга
-            accountOfArray[index].setREQUISITES(Long.parseLong(data[0]));
-            accountOfArray[index].setPIN(Integer.parseInt(data[1]));
-
-            index++;
+        String operation = "";
+        try {
+            operation = bf.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return accountOfArray;
+        return operation;
     }
 
-    public void checkPIN() {
-        Account[] accountForCheck = createArrayOfAccount();
+    @Override
+    public void setBalance(Map.Entry<Long, Account> entry, int topUpBalance) {
+        entry.getValue().setBalance(topUpBalance);
+    }
 
-        for (int i = 0; i < accountForCheck.length; i++) {
+    @Override
+    public void checkPIN() {
+        Account account = inputData();
+        int operation = Integer.parseInt(inputOperation());
+
+
+        while (operation != 5) {
             for (Map.Entry<Long, Account> entry : accounts.entrySet()) {
-                if (entry.getValue().hashCode() == accountForCheck[i].hashCode()) {
-                    System.out.println(accountForCheck[i].getREQUISITES());
-                    break;
+                // Continue my logic. Oevole your task is 3rd. Anna your task is 2nd.
+
+                if (account.hashCode() == entry.getValue().hashCode() && operation == 1) {
+                    // Operation for show balance
+                    printBalance(entry);
+                } else if (account.hashCode() == entry.getValue().hashCode() && operation == 4) {
+                    int newBalance = 0;
+
+                    try {
+                        newBalance = Integer.parseInt(bf.readLine());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    setBalance(entry, newBalance);
                 }
             }
+
+            operation = Integer.parseInt(inputOperation());
         }
     }
 
-    public void testPrintDataBase() {
+    @Override
+    public void testPrint() {
         dataBase();
         checkPIN();
+    }
 
+    @Override
+    public void printAllClient() {
         for (Map.Entry<Long, Account> accountEntry : accounts.entrySet()) {
             System.out.println("---------------------------------------------------------------------\n" +
                     "PIN-код: " + accountEntry.getKey() + "\nДанные о пользователе " +
                     accountEntry.getValue().getREQUISITES() + "   " + accountEntry.getValue().getNAME() + "   " +
                     accountEntry.getValue().getSUB_NAME());
         }
+    }
+
+    @Override
+    public void printBalance(Map.Entry<Long, Account> entry) {
+        System.out.println("Hello, " + entry.getValue().getNAME());
+        System.out.println("Your balance is " + entry.getValue().getBalance());
     }
 }
