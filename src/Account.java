@@ -1,6 +1,4 @@
-import java.util.Objects;
-
-public class Account {
+public class Account implements Client{
     // must have fields
     private long REQUISITES;
     private String NAME;
@@ -29,9 +27,6 @@ public class Account {
         return REQUISITES;
     }
 
-    public int getPIN() {
-        return PIN;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -57,5 +52,25 @@ public class Account {
 
     public void setBalance(int balance) {
         this.balance += balance;
+    }
+
+    @Override
+    public void transfer(Account account, int balance) {
+        account.setBalance(balance);
+        if (this.balance < balance) {
+            System.out.println("Insufficient funds to withdraw money!");
+        } else {
+            this.balance -= balance;
+            System.out.println("The translation was successful!");
+        }
+    }
+
+    @Override
+    public void withdrawing (int balance) {
+        if (this.balance < balance) {
+            System.out.println("Insufficient funds to withdraw money!");
+        } else {
+            this.balance -= balance;
+        }
     }
 }

@@ -5,15 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BankService implements Console, Bank {
-    Map<Long, Account> accounts = new HashMap<>();
+    Map<Long, Account> accounts = new HashMap<>(); // map of some accounts
     BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-    int count = 0;
 
     @Override
     public void createAccount(long requisites, String name, String subName, int PIN) {
         Account account = new Account(requisites, name, subName, PIN);
         accounts.put(account.getREQUISITES(), account);
-        count++;
     }
 
     @Override
@@ -35,10 +33,10 @@ public class BankService implements Console, Bank {
     public Account inputData() {
         Account createAccount = null;
         try {
-            System.out.println("Введите Ваш PIN-код");
+            System.out.println("Enter your PIN - code");
             int PIN = Integer.parseInt(bf.readLine());
 
-            System.out.println("Введите Ваши реквизиты");
+            System.out.println("Enter your details");
             long requisites = Long.parseLong(bf.readLine());
 
             createAccount = new Account(requisites,"","",PIN);
@@ -50,7 +48,7 @@ public class BankService implements Console, Bank {
 
     @Override
     public void printOperation() {
-        System.out.println("Select your variant of operation");
+        System.out.println("\nSelect your variant of operation");
         System.out.println("1. Show your balance\n" +
                 "2. Refresh balance\n" +
                 "3. Get some money\n" +
@@ -90,10 +88,15 @@ public class BankService implements Console, Bank {
                 if (account.hashCode() == entry.getValue().hashCode() && operation == 1) {
                     // Operation for show balance
                     printBalance(entry);
+                } else if (account.hashCode() == entry.getValue().hashCode() && operation == 2) {
+                    refreshBalance(entry);
+                } else if (account.hashCode() == entry.getValue().hashCode() && operation == 3) {
+                    getSomeMoney(entry);
                 } else if (account.hashCode() == entry.getValue().hashCode() && operation == 4) {
                     int newBalance = 0;
 
                     try {
+                        System.out.print("Enter the amount to replenish funds: ");
                         newBalance = Integer.parseInt(bf.readLine());
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -116,7 +119,7 @@ public class BankService implements Console, Bank {
     public void printAllClient() {
         for (Map.Entry<Long, Account> accountEntry : accounts.entrySet()) {
             System.out.println("---------------------------------------------------------------------\n" +
-                    "PIN-код: " + accountEntry.getKey() + "\nДанные о пользователе " +
+                    "PIN-code: " + accountEntry.getKey() + "\nUser data " +
                     accountEntry.getValue().getREQUISITES() + "   " + accountEntry.getValue().getNAME() + "   " +
                     accountEntry.getValue().getSUB_NAME());
         }
@@ -126,5 +129,41 @@ public class BankService implements Console, Bank {
     public void printBalance(Map.Entry<Long, Account> entry) {
         System.out.println("Hello, " + entry.getValue().getNAME());
         System.out.println("Your balance is " + entry.getValue().getBalance());
+    }
+
+    @Override
+    public void refreshBalance(Map.Entry<Long, Account> entryFrom) {
+        long requisitesTo = 0;
+        int balance = 0;
+
+        try {
+            System.out.print("Specify the details for the transfer (card number): ");
+            requisitesTo = Long.parseLong(bf.readLine());
+            System.out.print("Enter the transfer amount: ");
+            balance = Integer.parseInt(bf.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Map.Entry<Long, Account> entryTo : accounts.entrySet()) {
+            // проверка есть ли в базе введённые реквизиты
+            if (requisitesTo == entryTo.getValue().getREQUISITES()) {
+                entryFrom.getValue().transfer(entryTo.getValue(), balance);
+            }
+        }
+    }
+
+    @Override
+    public void getSomeMoney(Map.Entry<Long, Account> entry) {
+        int getMoney = 0;
+
+        try {
+            System.out.print("Type sum which you want to get: ");
+            getMoney = Integer.parseInt(bf.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        entry.getValue().withdrawing(getMoney);
     }
 }
